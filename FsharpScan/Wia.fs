@@ -1,5 +1,6 @@
-﻿// Simple scanning library for F# built on top of WIA (Windows Image Acquisition)
+﻿// Simple scanning library for F# built on top of WIA (Windows Image Acquisition Library)
 namespace DavidDostal.FSharpScan
+
 #if INTERACTIVE
 #r ".\obj\Debug\Interop.WIA.dll"
 #endif
@@ -218,75 +219,3 @@ module Wia =
     let setResolution res =
         setItemProp res PropertyId.VerticalResolution |> ignore
         setItemProp res PropertyId.HorizontalResolution |> ignore
-
-module DeviceManager =
-
-    // Initialize a new deviceManager.
-    let initialize () = Wia.createWia()
-
-    // Get all connected scanners.
-    let scanners devManager = Wia.scanners devManager
-
-    // Get first of connected scanners.
-    let defaultScanner devManager = scanners devManager |> Seq.tryHead
-
-    //let watchDeviceConnected watcher (devManager: DeviceManagerClass) =
-    //    Wia.registerEvent EventId.DeviceConnected watcher
-        
-    //let watchDeviceDisconnected watcher devManager =
-
-module Scanner =
-    let connect  = Wia.connect
-    let scan scanner = Wia.scan
-    //let resolutions scanner =
-    //let minResolution scanner =
-    //let maxResolution scanner =
-    //let setResolution scanner =
-    //let colorMode scanner =
-    //let colorModes scanner =
-    //let setColorMode scanner =
-    //let contrast scanner =
-    //let minContrast scanner =
-    //let maxContrast scanner =
-    //let setContrast scanner =
-    //let brightness scanner =
-    //let minBrightness scanner =
-    //let maxBrightness scanner =
-    //let setBrightness scanner =
-    //let paperSource scanner =
-    //let paperSources scanner =
-    //let setPaperSource scanner =
-    //let fileType scanner =
-    //let setFileType scanner =
-    //let paperSize scanner =
-    //let paperSizes scanner =
-    //let setPaperSize scanner =
-    //let 
-    //let hasDuplex scanner =
-    //let pageCount =
-    //let pageCounts =
-    //let setPageCount =
-
-module Dialogs =
-    open WIA
-
-    // Show dialog with simplified scanner settings and option to scan.
-    let scanDialog () = CommonDialogClass().ShowAcquireImage(WiaDeviceType.ScannerDeviceType)
-
-    // Show dialog for choosing between installed scanners. Returns default scanner if only one is available.
-    let scannerSelectDialog () = CommonDialogClass().ShowSelectDevice(WiaDeviceType.ScannerDeviceType)
-
-    // Scan an image while showing progress dialog.
-    let scanProgressDialog source = CommonDialogClass().ShowTransfer(source)
-
-    // Show detailed scanner settings and import images after scan.
-    let scanWizard device = CommonDialogClass().ShowAcquisitionWizard(device)
-
-    // Show dialog with scanner properties.
-    let scannerPropsDialog scanner = CommonDialogClass().ShowDeviceProperties(scanner)
-
-    // Show dialog with image properties (resolution, brightness, contrast, color mode).
-    let imagePropsDialog source = CommonDialogClass().ShowItemProperties(source)
-
-    // Select scanner item before scanning. Same as scanDialog if only single source is present.
-    let itemSelectDialog scanner = CommonDialogClass().ShowSelectItems(scanner)

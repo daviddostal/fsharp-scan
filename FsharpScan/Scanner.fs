@@ -1,0 +1,32 @@
+﻿namespace DavidDostal.FSharpScan
+module Scanner =
+    let connect  = Wia.connect
+    let scan scanner = Wia.scan
+    //let resolutions scanner =
+    //let minResolution scanner =
+    //let maxResolution scanner =
+    //let setResolution scanner =
+    //let colorMode scanner =
+    //let colorModes scanner =
+    //let setColorMode scanner =
+    //let contrast scanner =
+    //let minContrast scanner =
+    //let maxContrast scanner =
+    //let setContrast scanner =
+    //let brightness scanner =
+    //let minBrightness scanner =
+    //let maxBrightness scanner =
+    //let setBrightness scanner =
+    //let paperSource scanner =
+    //let paperSources scanner =
+    //let setPaperSource scanner =
+    //let fileType scanner =
+    //let setFileType scanner =
+    //let paperSize scanner =
+    //let paperSizes scanner =
+    //let setPaperSize scanner =
+    //let 
+    //let hasDuplex scanner =
+    //let pageCount =
+    //let pageCounts =
+    //let setPageCount =

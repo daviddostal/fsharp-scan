@@ -42,8 +42,11 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="FsharpScan.fs" />
     <Content Include="packages.config" />
+    <Compile Include="Wia.fs" />
+    <Compile Include="DeviceManager.fs" />
+    <Compile Include="Scanner.fs" />
+    <Compile Include="Dialogs.fs" />
     <COMReference Include="Microsoft Windows Image Acquisition Library v2.0">
       <Guid>{94a0e92d-43c0-494e-ac29-fd45948a5221}</Guid>
       <VersionMajor>1</VersionMajor>
