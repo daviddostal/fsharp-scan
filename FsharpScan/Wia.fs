@@ -118,12 +118,6 @@ module Wia =
         | Invert = 6160
         | LampWarmUpTime = 6161
 
-    type ColorMode =
-        | Unspecified = 0
-        | Color = 1
-        | Grayscale = 2
-        | BlackAndWhite = 4
-
     type Result<'a, 'b> = Success of 'a | Failure of 'b
 
     let onEvent eventId deviceId itemId =

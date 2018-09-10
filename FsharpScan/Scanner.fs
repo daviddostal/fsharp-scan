@@ -1,32 +1,78 @@
 ﻿namespace DavidDostal.FSharpScan
+open WIA
+
 module Scanner =
-    let connect  = Wia.connect
-    let scan scanner = Wia.scan
-    //let resolutions scanner =
-    //let minResolution scanner =
-    //let maxResolution scanner =
-    //let setResolution scanner =
-    //let colorMode scanner =
-    //let colorModes scanner =
-    //let setColorMode scanner =
-    //let contrast scanner =
-    //let minContrast scanner =
-    //let maxContrast scanner =
-    //let setContrast scanner =
-    //let brightness scanner =
-    //let minBrightness scanner =
-    //let maxBrightness scanner =
-    //let setBrightness scanner =
-    //let paperSource scanner =
-    //let paperSources scanner =
-    //let setPaperSource scanner =
-    //let fileType scanner =
-    //let setFileType scanner =
-    //let paperSize scanner =
-    //let paperSizes scanner =
-    //let setPaperSize scanner =
-    //let 
-    //let hasDuplex scanner =
-    //let pageCount =
-    //let pageCounts =
-    //let setPageCount =
+
+    // Represents a scanner device connected to your computer.
+    type Scanner internal (device: Device) =
+        member __.Properties =
+            failwith "Not implemented yet"
+
+        member __.Settings =
+            failwith "Not implemented yet"
+
+        member __.Configure settings =
+            failwith "Not implemented yet"
+
+        member __.ImageSources =
+            failwith "Not implemented yet"
+
+        type ScannerProperties =
+            { name: string;
+              (*...*) }
+
+
+    // Provides information about an available scanner and allows to connect to it.
+    type ScannerInfo internal (deviceInfo: DeviceInfo) =
+
+        // Connect to the device
+        member __.Connect =
+            Scanner(Wia.connect deviceInfo)
+        
+        // Basic information about the scanner
+        member __.Properties =
+            failwith "Not implemented yet"
+
+        type ScannerInfoProperties =
+            { name: string;
+              manufacturer: string;
+              (*...*) }
+
+
+    // Represents an image source (such as flatbed scanner or document feeder) of a scanning device.
+    type ImageSource internal (item: Item) =
+
+        // Acquire an image from this source
+        member __.Scan =
+            failwith "Not implemented yet"
+        
+        // Get the properties of this image source
+        member __.Properties =
+            failwith "Not implemented yet"
+        
+        // Get the current settings of this image source
+        member __.Settings =
+            failwith "Not implemented yet"
+        
+        // Set new settings for this scanner
+        member __.Configure settings =
+            failwith "Not implemented yet"
+
+        type ColorMode = Unspecified | Color | Grayscale | BlackAndWhite
+
+        type ImageSourceSettings =
+            { resolution: int;
+              colorMode: ColorMode;
+              contrast: int;
+              brightness: int;
+              showProgress: bool;
+              (*...*) }
+
+        type ImageSourceProperties =
+            { name: string;
+              resolution: int; resolutions: int seq; minResolution: int; maxResolution: int;
+              colorMode: ColorMode; colorModes: ColorMode seq;
+              contrast: int; minContrast: int; maxContrast: int;
+              brightness: int; minBrightness: int; maxBrightness: int;
+              showProgress: bool;
+              (*...*)}
