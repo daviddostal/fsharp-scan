@@ -3,12 +3,13 @@ open WIA
 
 module Scanning =
     
+    // Manages available scanners
     type DeviceManager() =
-        let deviceManager = DeviceManagerClass()
+        let deviceManager = Wia.initialize()
 
         // Get information about available devices
         member __.DeviceInfos =
-            failwith "Not implemented yet"
+            Wia.deviceInfos deviceManager
 
 
     // Represents a scanner device connected to your computer.

@@ -46,6 +46,7 @@
     <Compile Include="Wia.fs" />
     <Compile Include="Scanning.fs" />
     <Compile Include="Dialogs.fs" />
+    <None Include="Scripts.fsx" />
     <COMReference Include="Microsoft Windows Image Acquisition Library v2.0">
       <Guid>{94a0e92d-43c0-494e-ac29-fd45948a5221}</Guid>
       <VersionMajor>1</VersionMajor>
