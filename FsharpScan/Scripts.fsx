@@ -132,9 +132,9 @@ module Scripts =
     let connect (device: DeviceInfo) = device.Connect()
 
     let toSeq counter getter comObj =
-        [for i in 1..(counter comObj) -> getter comObj i]
+        seq { for i in 1..(counter comObj) -> getter comObj i }
 
-    let deviceInfos (wia: DeviceManager) =
+    let deviceInfos (wia: DeviceManagerClass) =
         wia.DeviceInfos
         |> toSeq (fun x -> x.Count) (fun x i -> x.[ref (i :> obj)])
 
@@ -171,8 +171,8 @@ module Scripts =
 
     let scannerItems = items scanner
     let scannerProps = scannerProperties scanner |> propsMap
-    let picture = scannerItems.Head
-    let pictureProps = itemProperties scannerItems.Head |> propsMap
+    let picture = Seq.head scannerItems
+    let pictureProps =  scannerItems |> Seq.head |> itemProperties |> propsMap
 
     let prop propsMap (prop: PropertyId) = Map.tryFind (prop |> LanguagePrimitives.EnumToValue) propsMap
     let scannerProp = prop scannerProps
