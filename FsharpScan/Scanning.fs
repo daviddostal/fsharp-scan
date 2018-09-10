@@ -1,19 +1,32 @@
 ﻿namespace DavidDostal.FSharpScan
 open WIA
 
-module Scanner =
+module Scanning =
+    
+    type DeviceManager() =
+        let deviceManager = DeviceManagerClass()
+
+        // Get information about available devices
+        member __.DeviceInfos =
+            failwith "Not implemented yet"
+
 
     // Represents a scanner device connected to your computer.
     type Scanner internal (device: Device) =
+
+        // Get information about scanner properties.
         member __.Properties =
             failwith "Not implemented yet"
-
+        
+        // Get current scanner settings
         member __.Settings =
             failwith "Not implemented yet"
-
+        
+        // set new scanner settings
         member __.Configure settings =
             failwith "Not implemented yet"
-
+        
+        // Get all scanner image sources (flatbed, feeder, ...)
         member __.ImageSources =
             failwith "Not implemented yet"
 
