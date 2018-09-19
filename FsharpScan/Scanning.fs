@@ -43,7 +43,7 @@ module Scanning =
         member __.Configure settings =
             failwith "Not implemented yet"
 
-    and ColorMode = Unspecified=0 | Color=1 | Grayscale=2 | BlackAndWhite=4
+    and ColorMode = Unspecified = 0 | Color = 1 | Grayscale = 2 | BlackAndWhite = 4
 
     and ImageSourceSettings =
         { resolution: int;
@@ -70,16 +70,20 @@ module Scanning =
 
         // Get information about scanner properties.
         member __.Properties =
-            { name = propValue PropertyId.Name;
+            { deviceId = propValue PropertyId.DeviceID;
+              name = propValue PropertyId.Name;
               manufacturer = propValue PropertyId.Manufacturer;
               paperSources = Seq.empty;
               paperSource = PaperSource.Flatbed;
               //horizontalResolution = Wia.propValue PropertyId.HorizontalOpticalResolution device.Properties
+              scanMode = propValue PropertyId.Preview;
+              canPreview = propValue PropertyId.ShowPreviewControl;
               (*...*)}
         
         // Get current scanner settings
         member __.Settings =
-            { paperSource = PaperSource.Flatbed }
+            { paperSource = PaperSource.Flatbed;
+              scanMode = ScanMode.FinalScan }
         
         // set new scanner settings
         member __.Configure settings =
@@ -90,20 +94,26 @@ module Scanning =
             Wia.items device |> Seq.map (fun d -> ImageSource d)
 
     and ScannerProperties =
-        { name: string;
+        { deviceId: string;
+          name: string;
           manufacturer: string;
           paperSources: PaperSource seq;
           paperSource: PaperSource;
+          scanMode: ScanMode;
+          canPreview: bool;
           //horizontalResolution: int;
           (*...*) }
 
      and ScannerSettings =
-         { paperSource: PaperSource}
+         { paperSource: PaperSource;
+           scanMode: ScanMode }
 
      and PaperSource =
          | Flatbed
          | Feeder
          | Duplexer
+
+     and ScanMode = FinalScan = 0 | Preview = 1
 
 
     // Provides information about an available scanner and allows to connect to it.
@@ -117,13 +127,15 @@ module Scanning =
         
         // Basic information about the scanner
         member __.Properties =
-            { name = propValue Wia.PropertyId.Name;
-              manufacturer = propValue PropertyId.Manufacturer }
+            { deviceId = propValue PropertyId.DeviceID
+              name = propValue PropertyId.Name;
+              manufacturer = propValue PropertyId.Manufacturer; }
 
      and ScannerInfoProperties =
-         { name: string;
-           manufacturer: string;
-           (*...*) }
+         { deviceId: string;
+           name: string;
+           manufacturer: string; }
+
 
     // Manages available scanners
     type DeviceManager() =
@@ -133,4 +145,18 @@ module Scanning =
         member __.DeviceInfos =
             Wia.deviceInfos deviceManager
             |> Seq.map ScannerInfo
-   
+        
+        // Listen to a new scanner being connected
+        member __.listenScannerConnected handler =
+            Wia.addEventHandler deviceManager EventID.wiaEventDeviceConnected (fun device _ -> handler device)
+
+        // Listen to a scanner being disconnected
+        member __.listenScannerDisconnected handler =
+            Wia.addEventHandler deviceManager EventID.wiaEventDeviceDisconnected (fun device _ -> handler device)
+        
+        // Listen for a scan initiated from a scanner
+        member __.listenIncomingScan handler =
+            Wia.addEventHandler deviceManager EventID.wiaEventScanImage (fun device item -> handler device item)
+            Wia.addEventHandler deviceManager EventID.wiaEventScanImage2 (fun device item -> handler device item)
+            Wia.addEventHandler deviceManager EventID.wiaEventScanImage3 (fun device item -> handler device item)
+            Wia.addEventHandler deviceManager EventID.wiaEventScanImage4 (fun device item -> handler device item)

@@ -6,7 +6,19 @@ module Wia =
     open System.Drawing
     
     let initialize() =
-        DeviceManagerClass()
+        let deviceManager = DeviceManagerClass()
+        deviceManager.RegisterEvent(EventID.wiaEventDeviceConnected)
+        deviceManager.RegisterEvent(EventID.wiaEventDeviceDisconnected)
+        deviceManager.RegisterEvent(EventID.wiaEventScanImage)
+        deviceManager.RegisterEvent(EventID.wiaEventScanImage2)
+        deviceManager.RegisterEvent(EventID.wiaEventScanImage3)
+        deviceManager.RegisterEvent(EventID.wiaEventScanImage4)
+        deviceManager
+
+    let addEventHandler (deviceManager: DeviceManager) eventId handler =
+        deviceManager.add_OnEvent(
+            new _IDeviceManagerEvents_OnEventEventHandler(
+                fun event device item -> if event = eventId then handler device item else ()))
 
     let toSeq counter getter comObj =
         seq { for i in 1..(counter comObj) -> getter comObj i }
@@ -14,6 +26,7 @@ module Wia =
     let deviceInfos (wia: DeviceManager) =
         wia.DeviceInfos
         |> toSeq (fun x -> x.Count) (fun x i -> x.[ref (i :> obj)])
+        |> Seq.filter (fun x -> x.Type = WiaDeviceType.ScannerDeviceType)
 
     let connect (device: DeviceInfo) = device.Connect()
 
@@ -80,6 +93,7 @@ module Wia =
         | Preview = 3100
         | TransparencyAdapter = 3101
         | TransparecnyAdapterSelect = 3102
+        | ShowPreviewControl = 3103
         | ItemName = 4098
         | FullItemName = 4099
         | ItemTimeStamp = 4100
