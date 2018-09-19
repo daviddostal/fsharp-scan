@@ -2,13 +2,15 @@
 
 module Wia =
     open WIA
+    open System.IO
+    open System.Drawing
     
     let initialize() =
         DeviceManagerClass()
 
     let toSeq counter getter comObj =
         seq { for i in 1..(counter comObj) -> getter comObj i }
-        
+
     let deviceInfos (wia: DeviceManager) =
         wia.DeviceInfos
         |> toSeq (fun x -> x.Count) (fun x i -> x.[ref (i :> obj)])
@@ -128,21 +130,38 @@ module Wia =
         | Threshold = 6159
         | Invert = 6160
         | LampWarmUpTime = 6161
-    
+
     let enumVal enum =
         LanguagePrimitives.EnumToValue enum
 
-    let deviceInfoProps (deviceInfo: DeviceInfo) =
-        deviceInfo.Properties
-        |> toSeq (fun (x: Properties) -> x.Count)
-                 (fun x i -> let prop = x.[ref (i :> obj)]
-                             (prop.PropertyID, prop))
-        |> Map.ofSeq
+    let getProp (props: Properties) (propId: PropertyId) =
+        toSeq (fun (p: Properties) -> p.Count) (fun p i -> p.Item(ref (i :> obj))) props
+        |> Seq.find (fun p -> p.PropertyID = enumVal propId)    
 
-    let propValue<'a> (prop: Property) =
-        prop.Value :?> 'a
+    let propValue<'a> (props: Properties) (propId: PropertyId) =
+        (getProp props propId).Value :?> 'a
 
-    let deviceInfoProp (propId: PropertyId) (deviceInfo: DeviceInfo) =
-        deviceInfoProps deviceInfo
-        |> Map.find (enumVal propId)
-        |> propValue
+    let propRange<'a> (props: Properties) (propId: PropertyId) =
+        (getProp props propId).SubTypeValues
+        |> toSeq (fun (x: Vector) -> x.Count )
+                 (fun x i -> x.Item(i) :?> 'a)
+
+    let propMin (props: Properties) (propId: PropertyId) =
+        (getProp props propId).SubTypeMin
+
+    let propMax (props: Properties) (propId: PropertyId) =
+        (getProp props propId).SubTypeMax
+
+    let scan (item: Item) =
+        item.Transfer() :?> ImageFile
+
+    let toBitmap (imageFile: ImageFile) =
+        let bytes = imageFile.FileData.get_BinaryData() :?> byte array
+        new MemoryStream(bytes) |> System.Drawing.Image.FromStream
+
+    let extractFrame (imageFile: ImageFile) id =
+        imageFile.ActiveFrame <- id
+        imageFile.ARGBData.get_ImageFile(imageFile.Width, imageFile.Height);
+
+    let extractImages (imageFile: ImageFile) =
+        seq { for i in 0..imageFile.FrameCount -> extractFrame imageFile i |> toBitmap }
