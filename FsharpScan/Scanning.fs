@@ -20,10 +20,8 @@ module Scanning =
         // Get the properties of this image source
         member __.Properties: ImageSourceProperties =
             { name = propValue PropertyId.ItemName;
-              resolution = propValue PropertyId.HorizontalOpticalResolution;
+              resolution = propValue PropertyId.HorizontalResolution; // TODO: decide if combining horizontal and vertical resolution is a good idea (probably not)
               resolutions = propRange PropertyId.HorizontalResolution;
-              //minResolution = Wia.propMin PropertyId.Ho;
-              //maxResolution = 0;
               colorMode = propValue PropertyId.CurrentIntent;
               colorModes = propRange PropertyId.CurrentIntent;
               contrast = propValue PropertyId.Contrast;
@@ -32,7 +30,7 @@ module Scanning =
               brightness = propValue PropertyId.Brightness;
               minBrightness = propMin PropertyId.Brightness;
               maxBrightness = propMax PropertyId.Brightness;
-              //showProgress = getProp PropertyId.;
+              //showProgress = getProp PropertyId.; // TODO: decide, if this should be a property (probably not)
               }
         
         // Get the current settings of this image source
@@ -73,17 +71,17 @@ module Scanning =
             { deviceId = propValue PropertyId.DeviceID;
               name = propValue PropertyId.Name;
               manufacturer = propValue PropertyId.Manufacturer;
-              paperSources = Seq.empty;
-              paperSource = PaperSource.Flatbed;
-              //horizontalResolution = Wia.propValue PropertyId.HorizontalOpticalResolution device.Properties
+              paperSources = failwith "Not implemented yet";
+              paperSource = failwith "Not implemented yet";
+              horizontalResolution = propValue PropertyId.HorizontalOpticalResolution
+              verticalResolution = propValue PropertyId.VerticalOpticalResolution
               scanMode = propValue PropertyId.Preview;
-              canPreview = propValue PropertyId.ShowPreviewControl;
-              (*...*)}
+              canPreview = propValue PropertyId.ShowPreviewControl; }
         
         // Get current scanner settings
         member __.Settings =
-            { paperSource = PaperSource.Flatbed;
-              scanMode = ScanMode.FinalScan }
+            { paperSource = failwith "Not implemented yet";
+              scanMode = failwith "Not implemented yet"; }
         
         // set new scanner settings
         member __.Configure settings =
@@ -101,8 +99,8 @@ module Scanning =
           paperSource: PaperSource;
           scanMode: ScanMode;
           canPreview: bool;
-          //horizontalResolution: int;
-          (*...*) }
+          horizontalResolution: int;
+          verticalResolution: int; }
 
      and ScannerSettings =
          { paperSource: PaperSource;
