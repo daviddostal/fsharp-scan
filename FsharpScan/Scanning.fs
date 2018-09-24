@@ -20,9 +20,14 @@ module Scanning =
         // Get the properties of this image source
         member __.Properties: ImageSourceProperties =
             { name = propValue PropertyId.ItemName;
-              // TODO: decide if combining horizontal and vertical resolution is a good idea (probably not)
-              resolution = propValue PropertyId.HorizontalResolution;
-              resolutions = propRange PropertyId.HorizontalResolution;
+              horizontalResolution = propValue PropertyId.HorizontalResolution;
+              horizontalResolutions = propRange PropertyId.HorizontalResolution;
+              minHorizontalResolution = propRange PropertyId.HorizontalResolution |> Seq.min;
+              maxHorizontalResolution = propRange PropertyId.HorizontalResolution |> Seq.max;
+              verticalResolution = propValue PropertyId.VerticalResolution;
+              verticalResolutions = propRange PropertyId.VerticalResolution;
+              minVerticalResolution = propRange PropertyId.VerticalResolution |> Seq.min;
+              maxVerticalResolution = propRange PropertyId.VerticalResolution |> Seq.max;
               colorMode = propValue PropertyId.CurrentIntent;
               colorModes = propRange PropertyId.CurrentIntent;
               contrast = propValue PropertyId.Contrast;
@@ -30,9 +35,7 @@ module Scanning =
               maxContrast = propMax PropertyId.Contrast;
               brightness = propValue PropertyId.Brightness;
               minBrightness = propMin PropertyId.Brightness;
-              maxBrightness = propMax PropertyId.Brightness;
-              //showProgress = getProp PropertyId.; // TODO: decide, if this should be a property (probably not)
-              }
+              maxBrightness = propMax PropertyId.Brightness; }
         
         // Get the current settings of this image source
         member __.Settings =
@@ -45,16 +48,15 @@ module Scanning =
     and ColorMode = Unspecified = 0 | Color = 1 | Grayscale = 2 | BlackAndWhite = 4
 
     and ImageSourceSettings =
-        { resolution: int;
+        { horizontalResolution: int;
           colorMode: ColorMode;
           contrast: int;
-          brightness: int;
-          showProgress: bool;
-          (*...*) }
+          brightness: int; }
 
     and ImageSourceProperties =
         { name: string;
-          resolution: int; resolutions: int seq; //minResolution: int; maxResolution: int;
+          horizontalResolution: int; horizontalResolutions: int seq; minHorizontalResolution: int; maxHorizontalResolution: int;
+          verticalResolution: int; verticalResolutions: int seq; minVerticalResolution: int; maxVerticalResolution: int;
           colorMode: ColorMode; colorModes: ColorMode seq;
           contrast: int; minContrast: int; maxContrast: int;
           brightness: int; minBrightness: int; maxBrightness: int;
@@ -75,8 +77,8 @@ module Scanning =
               manufacturer = propValue PropertyId.Manufacturer;
               paperSources = failwith "Not implemented yet";
               paperSource = failwith "Not implemented yet";
-              horizontalResolution = propValue PropertyId.HorizontalOpticalResolution
-              verticalResolution = propValue PropertyId.VerticalOpticalResolution
+              horizontalOpticalResolution = propValue PropertyId.HorizontalOpticalResolution
+              verticalOpticalResolution = propValue PropertyId.VerticalOpticalResolution
               scanMode = propValue PropertyId.Preview;
               canPreview = propValue PropertyId.ShowPreviewControl; }
         
@@ -103,8 +105,8 @@ module Scanning =
           paperSource: PaperSource;
           scanMode: ScanMode;
           canPreview: bool;
-          horizontalResolution: int;
-          verticalResolution: int; }
+          horizontalOpticalResolution: int;
+          verticalOpticalResolution: int; }
 
      and ScannerSettings =
          { paperSource: PaperSource;
