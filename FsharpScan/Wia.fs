@@ -155,6 +155,9 @@ module Wia =
     let propValue<'a> (props: Properties) (propId: PropertyId) =
         (getProp props propId).Value :?> 'a
 
+    let setPropValue (props: Properties) (propId: PropertyId) value =
+        (getProp props propId).Value <- (ref (value :> obj))
+
     let propRange<'a> (props: Properties) (propId: PropertyId) =
         (getProp props propId).SubTypeValues
         |> toSeq (fun (x: Vector) -> x.Count )

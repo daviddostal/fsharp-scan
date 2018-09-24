@@ -20,7 +20,8 @@ module Scanning =
         // Get the properties of this image source
         member __.Properties: ImageSourceProperties =
             { name = propValue PropertyId.ItemName;
-              resolution = propValue PropertyId.HorizontalResolution; // TODO: decide if combining horizontal and vertical resolution is a good idea (probably not)
+              // TODO: decide if combining horizontal and vertical resolution is a good idea (probably not)
+              resolution = propValue PropertyId.HorizontalResolution;
               resolutions = propRange PropertyId.HorizontalResolution;
               colorMode = propValue PropertyId.CurrentIntent;
               colorModes = propRange PropertyId.CurrentIntent;
@@ -65,6 +66,7 @@ module Scanning =
     type Scanner internal (device: Device) =
 
         let propValue propId = Wia.propValue device.Properties propId
+        let setPropValue propId = Wia.setPropValue device.Properties propId
 
         // Get information about scanner properties.
         member __.Properties =
@@ -85,6 +87,8 @@ module Scanning =
         
         // set new scanner settings
         member __.Configure settings =
+            //setPropValue paperSource
+            setPropValue PropertyId.Preview settings.scanMode
             failwith "Not implemented yet"
         
         // Get all scanner image sources
