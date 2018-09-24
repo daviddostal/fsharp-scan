@@ -5,7 +5,7 @@ module Scanning =
     open Wia
    
 
-     // Represents an image source (such as flatbed scanner or document feeder) of a scanning device.
+     /// Represents an image source (such as flatbed scanner or document feeder) of a scanning device.
     type ImageSource internal (item: Item) =
 
         let propValue propId = Wia.propValue item.Properties propId
@@ -13,11 +13,11 @@ module Scanning =
         let propMin propId = Wia.propMin item.Properties propId
         let propMax propId = Wia.propMax item.Properties propId
 
-        // Acquire an image from this source
+        /// Acquire an image from this source.
         member __.Scan =
             Wia.scan >> Wia.toBitmap
         
-        // Get the properties of this image source
+        /// Get the properties of this image source.
         member __.Properties: ImageSourceProperties =
             { name = propValue PropertyId.ItemName;
               horizontalResolution = propValue PropertyId.HorizontalResolution;
@@ -37,11 +37,14 @@ module Scanning =
               minBrightness = propMin PropertyId.Brightness;
               maxBrightness = propMax PropertyId.Brightness; }
         
-        // Get the current settings of this image source
+        /// Get the current settings of this image source.
         member __.Settings =
-            failwith "Not implemented yet"
+            { horizontalResolution = failwith "Not implemented yet";
+              colorMode = failwith "Not implemented yet";
+              contrast = failwith "Not implemented yet";
+              brightness = failwith "Not implemented yet" }
         
-        // Set new settings for this scanner
+        /// Set new settings for this scanner.
         member __.Configure settings =
             failwith "Not implemented yet"
 
@@ -59,18 +62,16 @@ module Scanning =
           verticalResolution: int; verticalResolutions: int seq; minVerticalResolution: int; maxVerticalResolution: int;
           colorMode: ColorMode; colorModes: ColorMode seq;
           contrast: int; minContrast: int; maxContrast: int;
-          brightness: int; minBrightness: int; maxBrightness: int;
-          //showProgress: bool;
-          (*...*)}
+          brightness: int; minBrightness: int; maxBrightness: int; }
 
 
-    // Represents a scanner device connected to your computer.
+    /// Represents a scanner device connected to your computer.
     type Scanner internal (device: Device) =
 
         let propValue propId = Wia.propValue device.Properties propId
         let setPropValue propId = Wia.setPropValue device.Properties propId
 
-        // Get information about scanner properties.
+        /// Get information about scanner properties.
         member __.Properties =
             { deviceId = propValue PropertyId.DeviceID;
               name = propValue PropertyId.Name;
@@ -82,18 +83,18 @@ module Scanning =
               scanMode = propValue PropertyId.Preview;
               canPreview = propValue PropertyId.ShowPreviewControl; }
         
-        // Get current scanner settings
+        /// Get current scanner settings.
         member __.Settings =
             { paperSource = failwith "Not implemented yet";
               scanMode = failwith "Not implemented yet"; }
         
-        // set new scanner settings
+        /// Set new scanner settings.
         member __.Configure settings =
             //setPropValue paperSource
             setPropValue PropertyId.Preview settings.scanMode
             failwith "Not implemented yet"
         
-        // Get all scanner image sources
+        /// Get all scanner image sources.
         member __.ImageSources =
             Wia.items device |> Seq.map (fun d -> ImageSource d)
 
@@ -120,16 +121,16 @@ module Scanning =
      and ScanMode = FinalScan = 0 | Preview = 1
 
 
-    // Provides information about an available scanner and allows to connect to it.
+    /// Provides information about an available scanner and allows to connect to it.
     type ScannerInfo internal (deviceInfo: DeviceInfo) =
 
         let propValue propertyId = Wia.propValue deviceInfo.Properties propertyId
 
-        // Connect to the device
+        /// Connect to the device.
         member __.Connect =
             Scanner(Wia.connect deviceInfo)
         
-        // Basic information about the scanner
+        /// Basic information about the scanner.
         member __.Properties =
             { deviceId = propValue PropertyId.DeviceID
               name = propValue PropertyId.Name;
@@ -141,24 +142,24 @@ module Scanning =
            manufacturer: string; }
 
 
-    // Manages available scanners
+    /// Manages available scanners.
     type DeviceManager() =
         let deviceManager = Wia.initialize()
 
-        // Get information about available devices
+        /// Get information about available devices.
         member __.DeviceInfos =
             Wia.deviceInfos deviceManager
             |> Seq.map ScannerInfo
         
-        // Listen to a new scanner being connected
+        /// Listen to a new scanner being connected.
         member __.listenScannerConnected handler =
             Wia.addEventHandler deviceManager EventID.wiaEventDeviceConnected (fun device _ -> handler device)
 
-        // Listen to a scanner being disconnected
+        /// Listen to a scanner being disconnected.
         member __.listenScannerDisconnected handler =
             Wia.addEventHandler deviceManager EventID.wiaEventDeviceDisconnected (fun device _ -> handler device)
         
-        // Listen for a scan initiated from a scanner
+        /// Listen for a scan initiated from a scanner.
         member __.listenIncomingScan handler =
             Wia.addEventHandler deviceManager EventID.wiaEventScanImage (fun device item -> handler device item)
             Wia.addEventHandler deviceManager EventID.wiaEventScanImage2 (fun device item -> handler device item)
