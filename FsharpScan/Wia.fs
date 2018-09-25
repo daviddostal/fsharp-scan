@@ -3,7 +3,8 @@
 module Wia =
     open WIA
     open System.IO
-    open System.Drawing
+    open System
+    open System.Linq
     
     let initialize() =
         let deviceManager = DeviceManagerClass()
@@ -155,7 +156,7 @@ module Wia =
     let propValue<'a> (props: Properties) (propId: PropertyId) =
         (getProp props propId).Value :?> 'a
 
-    let setPropValue (props: Properties) (propId: PropertyId) value =
+    let setProp (props: Properties) (propId: PropertyId) value =
         (getProp props propId).Value <- (ref (value :> obj))
 
     let propRange<'a> (props: Properties) (propId: PropertyId) =
@@ -168,6 +169,26 @@ module Wia =
 
     let propMax (props: Properties) (propId: PropertyId) =
         (getProp props propId).SubTypeMax
+
+    let getFlags<'a> (enum: Enum) =
+        Enum.GetValues(enum.GetType()).Cast<Enum>() |> Seq.filter (fun x -> enum.HasFlag(x))
+
+    let clearFlags flags enum =
+        enum &&& (~~~ flags)
+
+    let allFlags enum =
+        Enum.GetValues(enum.GetType()).Cast<int>()
+        |> Seq.reduce (|||)
+
+    let withFlags flags enum =
+        enum
+        |> clearFlags (allFlags flags)
+        |> (|||) (enumVal flags)
+
+    let setPropFlags (props: Properties) (propId: PropertyId) value =
+        propValue props propId
+        |> withFlags value
+        |> setProp props propId
 
     let scan (item: Item) =
         item.Transfer() :?> ImageFile

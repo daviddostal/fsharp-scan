@@ -4,14 +4,15 @@ open WIA
 module Scanning =
     open Wia
    
-
      /// Represents an image source (such as flatbed scanner or document feeder) of a scanning device.
     type ImageSource internal (item: Item) =
 
         let propValue propId = Wia.propValue item.Properties propId
+        let setProp propId = Wia.setProp item.Properties propId
         let propRange propId = Wia.propRange item.Properties propId
         let propMin propId = Wia.propMin item.Properties propId
         let propMax propId = Wia.propMax item.Properties propId
+        let setFlags propId = Wia.setPropFlags item.Properties propId
 
         /// Acquire an image from this source.
         member __.Scan =
@@ -39,19 +40,25 @@ module Scanning =
         
         /// Get the current settings of this image source.
         member __.Settings =
-            { horizontalResolution = failwith "Not implemented yet";
-              colorMode = failwith "Not implemented yet";
-              contrast = failwith "Not implemented yet";
-              brightness = failwith "Not implemented yet" }
+            { horizontalResolution = propValue PropertyId.HorizontalResolution;
+              verticalResolution = propValue PropertyId.VerticalResolution;
+              colorMode = propValue PropertyId.CurrentIntent;
+              contrast = propValue PropertyId.Contrast;
+              brightness = propValue PropertyId.Brightness; }
         
         /// Set new settings for this scanner.
         member __.Configure settings =
-            failwith "Not implemented yet"
+            setProp PropertyId.HorizontalResolution settings.horizontalResolution
+            setProp PropertyId.VerticalResolution settings.verticalResolution
+            setFlags PropertyId.CurrentIntent settings.colorMode
+            setProp PropertyId.Contrast settings.contrast
+            setProp PropertyId.Brightness settings.brightness
 
     and ColorMode = Unspecified = 0 | Color = 1 | Grayscale = 2 | BlackAndWhite = 4
 
     and ImageSourceSettings =
         { horizontalResolution: int;
+          verticalResolution: int;
           colorMode: ColorMode;
           contrast: int;
           brightness: int; }
@@ -69,7 +76,7 @@ module Scanning =
     type Scanner internal (device: Device) =
 
         let propValue propId = Wia.propValue device.Properties propId
-        let setPropValue propId = Wia.setPropValue device.Properties propId
+        let setProp propId = Wia.setProp device.Properties propId
 
         /// Get information about scanner properties.
         member __.Properties =
@@ -90,8 +97,8 @@ module Scanning =
         
         /// Set new scanner settings.
         member __.Configure settings =
-            //setPropValue paperSource
-            setPropValue PropertyId.Preview settings.scanMode
+            //setProp paperSource
+            setProp PropertyId.Preview settings.scanMode
             failwith "Not implemented yet"
         
         /// Get all scanner image sources.
