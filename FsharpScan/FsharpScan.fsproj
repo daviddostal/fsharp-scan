@@ -43,9 +43,11 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="packages.config" />
-    <Compile Include="Wia.fs" />
-    <Compile Include="Scanning.fs" />
-    <Compile Include="Dialogs.fs" />
+    <Compile Include="PropertyId.fs" />
+    <Compile Include="WiaInterop.fs" />
+    <Compile Include="ImageSource.fs" />
+    <Compile Include="Scanner.fs" />
+    <Compile Include="DeviceManager.fs" />
     <None Include="Scripts.fsx" />
     <COMReference Include="Microsoft Windows Image Acquisition Library v2.0">
       <Guid>{94a0e92d-43c0-494e-ac29-fd45948a5221}</Guid>

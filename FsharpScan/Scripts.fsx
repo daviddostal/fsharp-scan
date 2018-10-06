@@ -67,6 +67,7 @@ module Scripts =
         | Preview = 3100
         | TransparencyAdapter = 3101
         | TransparecnyAdapterSelect = 3102
+        | ShowPreviewControl = 3103
         | ItemName = 4098
         | FullItemName = 4099
         | ItemTimeStamp = 4100
@@ -188,7 +189,6 @@ module Scripts =
                  Success("Property successfuly updated.")
         | None -> Failure("Property not found.")
    
-
     let setItemProp value (propId: PropertyId) =
         let prop = prop pictureProps propId
         match prop with
@@ -214,3 +214,36 @@ module Scripts =
         setItemProp res PropertyId.VerticalResolution |> ignore
         setItemProp res PropertyId.HorizontalResolution |> ignore
 
+
+// -----------------------------------------------------------------------------
+// Example of possible api usage
+// -----------------------------------------------------------------------------
+
+//let connectedScanners = Scanning.getScanners ()
+//let currentScanner = Seq.head connectedScanners
+//let currentSource = Seq.Head currentScanner.scanSources
+
+//let scannerProperties = currentScanner.Properties
+//let imageProperties = currentScanner.Properties
+//
+//let settings = { currentSource.Settings with
+//                 Contrast = 100;
+//                 Brightness = 50;
+//                 PaperSource = PaperSource.Flatbed; }
+
+//let image = currentSource.scan settings
+
+
+//let scannerConnected = Scanning.registerScannerConnected onScannerConnected
+//...
+//Scanning.unregisterScannerConnected scannerConnected
+
+
+//let horizontalBedSize = currentScanner.getProp PropertyId.HorizontalScannerBedSize;
+//currentSource.setProp PropertyId.BitsPerPixel 8
+
+
+
+//let scanner = Scanning.scannerSelectDialog ()
+//let paperSource = Scanning.sourceSelectDialog scanner
+//let image = Scanning.scanProgressDialog paperSource
