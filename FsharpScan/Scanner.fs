@@ -42,6 +42,9 @@ type Scanner(device: Device) =
         |> WiaInterop.itemsSeq
         |> Seq.map ImageSource
 
+    /// Provides access to the internal WIA Device instance.
+    member __.__WiaDevice = device
+
 /// Common properties of a scanner device.
 and ScannerProperties =
     { deviceId: string;

@@ -54,3 +54,6 @@ type DeviceManager() =
     member __.ScannerSelectDialog() =
         dialogs.ShowSelectDevice(WiaDeviceType.ScannerDeviceType)
         |> Scanner
+    
+    /// Provides access to the internal WIA DeviceManager instance.
+    member __.__WiaDeviceManager = deviceManager

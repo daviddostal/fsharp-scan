@@ -1,7 +1,7 @@
 ﻿namespace DavidDostal.FSharpScan
 open WIA
 
-/// Represent an image source of a scanner, such as flatbed or document feeder.
+/// Represents an image source of a scanner, such as flatbed or document feeder.
 type ImageSource(item: Item) =
     let dialogs = CommonDialogClass()
 
@@ -82,6 +82,9 @@ type ImageSource(item: Item) =
     /// Show dialog with image properties (resolution, brightness, contrast, color mode).
     member __.ImagePropertiesDialog() =
         dialogs.ShowItemProperties(item)
+
+    /// Provides access to the internal WIA Item instance.
+    member __.__WiaItem = item
 
 /// The color mode used to scan an image.
 and ColorMode = Unspecified = 0 | Color = 1 | Grayscale = 2 | BlackAndWhite = 4
