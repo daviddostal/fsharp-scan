@@ -58,7 +58,7 @@ type ImageSource(item: Item) =
           brightness = this.GetProperty PropertyId.Brightness; }
     
     /// Set new settings of this image source.
-    member this.ApplySettings settings =
+    member this.ApplySettings (settings: ImageSourceSettings) =
         this.SetProperty PropertyId.HorizontalResolution settings.horizontalResolution
         this.SetProperty PropertyId.VerticalResolution settings.verticalResolution
         this.SetPropertyFlag PropertyId.CurrentIntent settings.colorMode

@@ -48,7 +48,8 @@
     <Compile Include="ImageSource.fs" />
     <Compile Include="Scanner.fs" />
     <Compile Include="DeviceManager.fs" />
-    <None Include="Scripts.fsx" />
+    <None Include="Examples.fsx" />
+    <None Include="Experiments.fsx" />
     <COMReference Include="Microsoft Windows Image Acquisition Library v2.0">
       <Guid>{94a0e92d-43c0-494e-ac29-fd45948a5221}</Guid>
       <VersionMajor>1</VersionMajor>
