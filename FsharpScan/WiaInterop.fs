@@ -14,6 +14,13 @@ module WiaInterop =
         deviceManager.RegisterEvent(EventID.wiaEventScanImage2)
         deviceManager.RegisterEvent(EventID.wiaEventScanImage3)
         deviceManager.RegisterEvent(EventID.wiaEventScanImage4)
+        deviceManager.RegisterEvent(EventID.wiaEventScanEmailImage)
+        deviceManager.RegisterEvent(EventID.wiaEventScanFaxImage)
+        deviceManager.RegisterEvent(EventID.wiaEventScanFilmImage)
+        deviceManager.RegisterEvent(EventID.wiaEventScanOCRImage)
+        deviceManager.RegisterEvent(EventID.wiaEventScanPrintImage)
+        deviceManager.RegisterEvent(EventID.wiaEventItemCreated)
+        deviceManager.RegisterEvent(EventID.wiaEventItemDeleted)
         deviceManager
 
     let addEventHandler (deviceManager: DeviceManager) eventId handler =

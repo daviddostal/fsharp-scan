@@ -37,7 +37,7 @@ type Scanner(device: Device) =
         dialogs.ShowDeviceProperties(device)
 
     /// Select scanner item before scanning. Same as scanDialog if only single source is present.
-    member __.ItemSelectDialog =
+    member __.ItemSelectDialog() =
         dialogs.ShowSelectItems(device)
         |> WiaInterop.itemsSeq
         |> Seq.map ImageSource
