@@ -1,25 +1,40 @@
 ﻿namespace DavidDostal.FSharpScan
 open WIA
+open System.Collections.Generic
+open System.Linq
 
 /// Provides information about connected scanners.
 type DeviceManager() =
     let deviceManager = WiaInterop.initialize()
     let dialogs = CommonDialogClass()
+    let scanners =
+        (WiaInterop.deviceInfos deviceManager
+        |> Seq.map (fun deviceInfo -> deviceInfo.Connect())
+        |> Seq.map Scanner).ToDictionary(fun d -> d.__WiaDevice.DeviceID)
+
+    let deviceConnected =
+        WiaInterop.addEventHandler deviceManager EventID.wiaEventDeviceConnected
+            (fun deviceId itemId ->
+                let scanner = Scanner((WiaInterop.deviceInfoFromId deviceManager deviceId).Connect())
+                scanners.Add(deviceId, scanner))
+
+    let deviceDisconnected =
+        WiaInterop.addEventHandler deviceManager EventID.wiaEventDeviceDisconnected
+            (fun deviceId itemId -> scanners.Remove(deviceId) |> ignore)
 
     /// Get a list of all connected scanners.
-    member this.ConnectedScanners() =
-        WiaInterop.deviceInfos deviceManager
-        |> Seq.map (fun deviceInfo -> deviceInfo.Connect())
-        |> Seq.map (fun device -> Scanner(device, this))
+    member this.ConnectedScanners() = scanners.Values |> seq
+        //WiaInterop.deviceInfos deviceManager
+        //|> Seq.map (fun deviceInfo -> deviceInfo.Connect())
+        //|> Seq.map (fun device -> Scanner(device))
     
     /// Register an event listener for events related to scanning.
     /// To unregister the event later save the result of this call.
-    member __.RegisterEvent (eventId: string) (handler: string -> string -> unit) =
-        let eventHandler =
-            new _IDeviceManagerEvents_OnEventEventHandler(
-                fun event device item -> if event = eventId then handler device item else ())
-        deviceManager.add_OnEvent(eventHandler);
-        eventHandler
+    member __.RegisterEvent (eventId: string) (handler: Scanner -> ImageSource option -> unit) =
+        WiaInterop.addEventHandler deviceManager eventId (fun deviceId itemId -> 
+            let scanner = scanners.[deviceId]
+            let item = scanner.ImageSources() |> Seq.tryFind(fun i -> i.__WiaItem.ItemID = itemId)
+            handler scanner item)
 
     /// Unregister an event handler returned by the RegisterEvent method.
     member __.UnregisterEvent handler =
@@ -46,18 +61,14 @@ type DeviceManager() =
 
     /// Show dialog with simplified scanner settings and option to scan.
     member __.ScanDialog() =
-        dialogs.ShowAcquireImage(WiaDeviceType.ScannerDeviceType)
+        dialogs.ShowAcquireImage(WiaDeviceType.ScannerDeviceType, CancelError=false)
         |> WiaInterop.toBitmap
 
     /// Show dialog for choosing between installed scanners.
     /// Returns default scanner if only one is available.
     member this.ScannerSelectDialog() =
-        dialogs.ShowSelectDevice(WiaDeviceType.ScannerDeviceType)
-        |> (fun device -> Scanner(device, this))
+        dialogs.ShowSelectDevice(WiaDeviceType.ScannerDeviceType, CancelError=false)
+        |> (fun device -> Scanner(device))
     
     /// Provides access to the internal WIA DeviceManager instance.
     member __.__WiaDeviceManager = deviceManager
-
-    interface WiaEventRegisterer with
-        member this.RegisterEvent eventId handler = this.RegisterEvent eventId handler
-        member this.UnregisterEvent handler = this.UnregisterEvent handler

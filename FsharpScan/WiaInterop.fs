@@ -24,9 +24,11 @@ module WiaInterop =
         deviceManager
 
     let addEventHandler (deviceManager: DeviceManager) eventId handler =
-        deviceManager.add_OnEvent(
+        let eventHandler =
             new _IDeviceManagerEvents_OnEventEventHandler(
-                fun event device item -> if event = eventId then handler device item else ()))
+                fun event device item -> if event = eventId then handler device item else ())
+        deviceManager.add_OnEvent(eventHandler)
+        eventHandler
 
     let toSeq counter getter comObj =
         seq { for i in 1..(counter comObj) -> getter comObj i }
@@ -35,6 +37,10 @@ module WiaInterop =
         wia.DeviceInfos
         |> toSeq (fun x -> x.Count) (fun x i -> x.[ref (i :> obj)])
         |> Seq.filter (fun x -> x.Type = WiaDeviceType.ScannerDeviceType)
+
+    let deviceInfoFromId (deviceManager: DeviceManager) deviceId =
+        deviceInfos deviceManager
+        |> Seq.find (fun device -> device.DeviceID = deviceId)
     
     let itemsSeq (items: Items) =
         toSeq (fun (x: Items) -> x.Count) (fun x i -> x.[i]) items

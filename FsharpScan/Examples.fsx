@@ -17,11 +17,11 @@ let example1() =
 /// Listen for events related to scanning.
 let example2() =
     let deviceManager = DeviceManager()
-    let imageReceived =
+    let scannerConnected =
         deviceManager.RegisterScannerConnected (
-            fun device item -> printfn "A new scanner was connected...")
+            fun scanner source -> printfn "A new scanner was connected: %s" scanner.Properties.name)
     // ...
-    deviceManager.UnregisterEvent imageReceived
+    deviceManager.UnregisterEvent scannerConnected
 
 
 /// Set additional WIA properties yourself.
