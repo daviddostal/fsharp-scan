@@ -9,7 +9,7 @@ type DeviceManager() =
     /// Get a list of all connected scanners.
     member __.ConnectedScanners() =
         WiaInterop.deviceInfos deviceManager
-        |> Seq.map WiaInterop.connect
+        |> Seq.map (fun deviceInfo -> deviceInfo.Connect())
         |> Seq.map Scanner
     
     /// Register an event listener for events related to scanning.

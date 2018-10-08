@@ -73,7 +73,7 @@ type ImageSource(item: Item) =
     member this.ScanWithSettings settings =
         this.ApplySettings settings
         this.Scan()
-
+    
     /// Scan an image while showing progress dialog.
     member __.ScanProgressDialog() =
         dialogs.ShowTransfer(item) :?> ImageFile

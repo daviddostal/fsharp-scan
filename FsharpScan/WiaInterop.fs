@@ -35,9 +35,7 @@ module WiaInterop =
         wia.DeviceInfos
         |> toSeq (fun x -> x.Count) (fun x i -> x.[ref (i :> obj)])
         |> Seq.filter (fun x -> x.Type = WiaDeviceType.ScannerDeviceType)
-
-    let connect (device: DeviceInfo) = device.Connect()
-
+    
     let itemsSeq (items: Items) =
         toSeq (fun (x: Items) -> x.Count) (fun x i -> x.[i]) items
 
@@ -45,40 +43,34 @@ module WiaInterop =
         scanner.Items
         |> itemsSeq
 
-    let enumVal enum =
-        LanguagePrimitives.EnumToValue enum
-
-    let getProp (props: Properties) (propId: PropertyId) =
+    let getProp (props: Properties) (propId: int) =
         toSeq (fun (p: Properties) -> p.Count) (fun p i -> p.Item(ref (i :> obj))) props
-        |> Seq.find (fun p -> p.PropertyID = enumVal propId)    
+        |> Seq.find (fun p -> p.PropertyID = propId)    
 
-    let propValue<'a> (props: Properties) (propId: PropertyId) =
+    let propValue<'a> (props: Properties) (propId: int) =
         (getProp props propId).Value :?> 'a
 
-    let setProp (props: Properties) (propId: PropertyId) value =
+    let setProp (props: Properties) (propId: int) value =
         (getProp props propId).Value <- (ref (value :> obj))
 
-    let propRange<'a> (props: Properties) (propId: PropertyId) =
+    let propRange<'a> (props: Properties) (propId: int) =
         (getProp props propId).SubTypeValues
         |> toSeq (fun (x: Vector) -> x.Count )
                  (fun x i -> x.Item(i) :?> 'a)
 
-    let propMin (props: Properties) (propId: PropertyId) =
+    let propMin (props: Properties) (propId: int) =
         (getProp props propId).SubTypeMin
 
-    let propMax (props: Properties) (propId: PropertyId) =
+    let propMax (props: Properties) (propId: int) =
         (getProp props propId).SubTypeMax
-
-    // let getFlags<'a> (enum: Enum) =
-    //     Enum.GetValues(enum.GetType()).Cast<Enum>() |> Seq.filter (fun x -> enum.HasFlag(x))
 
     let withFlags flags enum =
         let clearFlags flags enum = enum &&& (~~~ flags)
         let allFlags enum = Enum.GetValues(enum.GetType()).Cast<int>() |> Seq.reduce (|||)
         clearFlags (allFlags flags) enum // clear flags in case flags are only a subset of enum
-        |> (|||) (enumVal flags)         // set value
+        |> (|||) (LanguagePrimitives.EnumToValue flags) // set value
 
-    let setPropFlags (props: Properties) (propId: PropertyId) value =
+    let setPropFlags (props: Properties) (propId: int) value =
         propValue props propId
         |> withFlags value
         |> setProp props propId

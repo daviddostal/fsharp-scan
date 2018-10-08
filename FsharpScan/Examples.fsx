@@ -27,7 +27,7 @@ let example2() =
 /// Set additional WIA properties yourself.
 let example3() =
     let scanner = DeviceManager().ConnectedScanners() |> Seq.head
-    scanner.SetProperty PropertyId.Preview 1 // TODO: Add option to pass int instead of PropertyId.
+    scanner.SetProperty 3100 1
 
 
 /// Show system dialogs.

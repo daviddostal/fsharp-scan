@@ -60,11 +60,11 @@ module Scripts =
     let picture = Seq.head scannerItems
     let pictureProps =  scannerItems |> Seq.head |> itemProperties |> propsMap
 
-    let prop propsMap (prop: PropertyId) = Map.tryFind (prop |> LanguagePrimitives.EnumToValue) propsMap
+    let prop propsMap (prop: int) = Map.tryFind prop propsMap
     let scannerProp = prop scannerProps
     let pictureProp = prop pictureProps
 
-    let setDeviceProp value (propId: PropertyId) =
+    let setDeviceProp value (propId: int) =
         let prop = prop scannerProps propId
         match prop with
         | Some p ->
@@ -74,7 +74,7 @@ module Scripts =
                  Success("Property successfuly updated.")
         | None -> Failure("Property not found.")
    
-    let setItemProp value (propId: PropertyId) =
+    let setItemProp value (propId: int) =
         let prop = prop pictureProps propId
         match prop with
         | Some p ->
