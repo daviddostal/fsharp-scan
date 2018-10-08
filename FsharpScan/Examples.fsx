@@ -17,7 +17,7 @@ let example1() =
 /// Listen for events related to scanning.
 let example2() =
     let deviceManager = DeviceManager()
-    let imageReceived = // TODO: Make device and item actual instances instead of just ids.
+    let imageReceived =
         deviceManager.RegisterScannerConnected (
             fun device item -> printfn "A new scanner was connected...")
     // ...

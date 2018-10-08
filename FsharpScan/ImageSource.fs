@@ -1,8 +1,12 @@
 ﻿namespace DavidDostal.FSharpScan
 open WIA
 
+type DeviceEventRegisterer =
+    abstract member RegisterEvent: string -> (string -> unit) -> _IDeviceManagerEvents_OnEventEventHandler
+    abstract member UnregisterEvent: _IDeviceManagerEvents_OnEventEventHandler -> unit
+
 /// Represents an image source of a scanner, such as flatbed or document feeder.
-type ImageSource(item: Item) =
+type ImageSource(item: Item, eventRegisterer: DeviceEventRegisterer) =
     let dialogs = CommonDialogClass()
 
     /// Get a property value from the image source.
@@ -28,6 +32,15 @@ type ImageSource(item: Item) =
     /// Set the value of a flags property.
     member __.SetPropertyFlag propId value =
         WiaInterop.setPropFlags item.Properties propId value
+    
+    /// Listen for events related to this item.
+    member __.RegisterEvent eventId handler =
+        let handler = (fun itemId -> if itemId = item.ItemID then handler() else ())
+        eventRegisterer.RegisterEvent eventId handler
+    
+    /// Stop listening to an event created by calling RegisterEvent.
+    member __.UnregisterEvent handler =
+        eventRegisterer.UnregisterEvent handler
     
     /// Common properties of the image source.
     member this.Properties =

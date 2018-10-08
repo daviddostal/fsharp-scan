@@ -7,14 +7,14 @@ type DeviceManager() =
     let dialogs = CommonDialogClass()
 
     /// Get a list of all connected scanners.
-    member __.ConnectedScanners() =
+    member this.ConnectedScanners() =
         WiaInterop.deviceInfos deviceManager
         |> Seq.map (fun deviceInfo -> deviceInfo.Connect())
-        |> Seq.map Scanner
+        |> Seq.map (fun device -> Scanner(device, this))
     
     /// Register an event listener for events related to scanning.
     /// To unregister the event later save the result of this call.
-    member __.RegisterEvent eventId handler =
+    member __.RegisterEvent (eventId: string) (handler: string -> string -> unit) =
         let eventHandler =
             new _IDeviceManagerEvents_OnEventEventHandler(
                 fun event device item -> if event = eventId then handler device item else ())
@@ -51,9 +51,13 @@ type DeviceManager() =
 
     /// Show dialog for choosing between installed scanners.
     /// Returns default scanner if only one is available.
-    member __.ScannerSelectDialog() =
+    member this.ScannerSelectDialog() =
         dialogs.ShowSelectDevice(WiaDeviceType.ScannerDeviceType)
-        |> Scanner
+        |> (fun device -> Scanner(device, this))
     
     /// Provides access to the internal WIA DeviceManager instance.
     member __.__WiaDeviceManager = deviceManager
+
+    interface WiaEventRegisterer with
+        member this.RegisterEvent eventId handler = this.RegisterEvent eventId handler
+        member this.UnregisterEvent handler = this.UnregisterEvent handler
