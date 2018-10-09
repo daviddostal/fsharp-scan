@@ -1,7 +1,6 @@
 ﻿#r ".\obj\Debug\Interop.WIA.dll"
 #r ".\obj\Debug\FsharpScan.dll"
 open DavidDostal.FSharpScan
-open WIA
 
 /// Basic scanning with custom settings.
 let example1() =
@@ -19,7 +18,7 @@ let example2() =
     let deviceManager = DeviceManager()
     let scannerConnected =
         deviceManager.RegisterScannerConnected (
-            fun scanner source -> printfn "A new scanner was connected: %s" scanner.Properties.name)
+            fun scanner -> printfn "A new scanner was connected: %s" scanner.Properties.name)
     // ...
     deviceManager.UnregisterEvent scannerConnected
 
@@ -42,6 +41,6 @@ let example4 =
 let example5 =
     let wiaManager = DeviceManager().__WiaDeviceManager
     let deviceInfo = wiaManager.DeviceInfos.[ref (1 :> obj)]
-    if deviceInfo.Type = WiaDeviceType.ScannerDeviceType
+    if deviceInfo.Type = WIA.WiaDeviceType.ScannerDeviceType
         then deviceInfo.DeviceID
         else "Device is not a scanner."

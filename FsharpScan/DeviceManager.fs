@@ -46,11 +46,11 @@ type DeviceManager() =
     
     /// Register an event handler to be called when a scanner is connected.
     member this.RegisterScannerConnected handler =
-        this.RegisterEvent EventID.wiaEventDeviceConnected handler
+        this.RegisterEvent EventID.wiaEventDeviceConnected (fun scanner _ -> handler scanner)
     
     /// Register an event handler to be called when a scanner gets disconnected.
     member this.RegiserScannerDisconnected handler =
-        this.RegisterEvent EventID.wiaEventDeviceDisconnected handler
+        this.RegisterEvent EventID.wiaEventDeviceDisconnected (fun scanner _ -> handler scanner)
     
     /// Register an event handler to be called when a scan is initiated directly from the scanner.
     member this.RegisterIncomingScan handler =
