@@ -1,5 +1,5 @@
 ﻿#r ".\obj\Debug\Interop.WIA.dll"
-#r ".\obj\Debug\FsharpScan.dll"
+#r ".\obj\Debug\FSharpScan.dll"
 open DavidDostal.FSharpScan
 
 /// Basic scanning with custom settings.
