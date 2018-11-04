@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0300ab61-d0da-423b-a7cc-25dc7641f696</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FsharpScan</RootNamespace>
+    <RootNamespace>FSharpScan</RootNamespace>
     <AssemblyName>FSharpScan</AssemblyName>
     <UseStandardResourceNames>true</UseStandardResourceNames>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
