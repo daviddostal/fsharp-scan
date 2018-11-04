@@ -6,22 +6,28 @@ module WiaInterop =
     open System
     open System.Linq
     
-    let initialize() =
-        let deviceManager = DeviceManagerClass()
-        deviceManager.RegisterEvent(EventID.wiaEventDeviceConnected)
-        deviceManager.RegisterEvent(EventID.wiaEventDeviceDisconnected)
-        deviceManager.RegisterEvent(EventID.wiaEventScanImage)
-        deviceManager.RegisterEvent(EventID.wiaEventScanImage2)
-        deviceManager.RegisterEvent(EventID.wiaEventScanImage3)
-        deviceManager.RegisterEvent(EventID.wiaEventScanImage4)
-        deviceManager.RegisterEvent(EventID.wiaEventScanEmailImage)
-        deviceManager.RegisterEvent(EventID.wiaEventScanFaxImage)
-        deviceManager.RegisterEvent(EventID.wiaEventScanFilmImage)
-        deviceManager.RegisterEvent(EventID.wiaEventScanOCRImage)
-        deviceManager.RegisterEvent(EventID.wiaEventScanPrintImage)
-        deviceManager.RegisterEvent(EventID.wiaEventItemCreated)
-        deviceManager.RegisterEvent(EventID.wiaEventItemDeleted)
-        deviceManager
+    let initialize() = DeviceManagerClass()
+
+    // Events
+
+    let registerEvent (deviceManager: DeviceManagerClass) eventId =
+        deviceManager.RegisterEvent(eventId)
+    
+    let registerKnownEvents (deviceManager: DeviceManagerClass) =
+        [ EventID.wiaEventDeviceConnected;
+          EventID.wiaEventDeviceDisconnected;
+          EventID.wiaEventScanImage;
+          EventID.wiaEventScanImage2;
+          EventID.wiaEventScanImage3;
+          EventID.wiaEventScanImage4;
+          EventID.wiaEventScanEmailImage; 
+          EventID.wiaEventScanFaxImage;
+          EventID.wiaEventScanFilmImage;
+          EventID.wiaEventScanOCRImage;
+          EventID.wiaEventScanPrintImage;
+          EventID.wiaEventItemCreated;
+          EventID.wiaEventItemDeleted; ]
+        |> List.iter (registerEvent deviceManager)
 
     let addEventHandler (deviceManager: DeviceManager) eventId handler =
         let eventHandler =
@@ -29,6 +35,8 @@ module WiaInterop =
                 fun event device item -> if event = eventId then handler device item else ())
         deviceManager.add_OnEvent(eventHandler)
         eventHandler
+
+
 
     let deviceInfos (wia: DeviceManager) =
         seq { for i in 1..(wia.DeviceInfos.Count) -> wia.DeviceInfos.Item(ref (i :> obj)) }
@@ -78,6 +86,9 @@ module WiaInterop =
 
     let scan (item: Item) =
         item.Transfer() :?> ImageFile
+
+
+    // Images
 
     let toBitmap (imageFile: ImageFile) =
         let bytes = imageFile.FileData.get_BinaryData() :?> byte array

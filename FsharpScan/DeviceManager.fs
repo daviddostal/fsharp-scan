@@ -6,6 +6,7 @@ open System.Linq
 /// Provides information about connected scanners.
 type DeviceManager() =
     let deviceManager = WiaInterop.initialize()
+    do WiaInterop.registerKnownEvents deviceManager
     let dialogs = CommonDialogClass()
     let scanners =
         (WiaInterop.deviceInfos deviceManager
