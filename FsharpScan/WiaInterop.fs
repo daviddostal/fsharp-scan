@@ -30,12 +30,8 @@ module WiaInterop =
         deviceManager.add_OnEvent(eventHandler)
         eventHandler
 
-    let toSeq counter getter comObj =
-        seq { for i in 1..(counter comObj) -> getter comObj i }
-
     let deviceInfos (wia: DeviceManager) =
-        wia.DeviceInfos
-        |> toSeq (fun x -> x.Count) (fun x i -> x.[ref (i :> obj)])
+        seq { for i in 1..(wia.DeviceInfos.Count) -> wia.DeviceInfos.Item(ref (i :> obj)) }
         |> Seq.filter (fun x -> x.Type = WiaDeviceType.ScannerDeviceType)
 
     let deviceInfoFromId (deviceManager: DeviceManager) deviceId =
@@ -43,14 +39,14 @@ module WiaInterop =
         |> Seq.find (fun device -> device.DeviceID = deviceId)
     
     let itemsSeq (items: Items) =
-        toSeq (fun (x: Items) -> x.Count) (fun x i -> x.[i]) items
+        seq { for i in 1..items.Count -> items.Item(i) }
 
     let items (scanner: Device) = 
         scanner.Items
         |> itemsSeq
 
     let getProp (props: Properties) (propId: int) =
-        toSeq (fun (p: Properties) -> p.Count) (fun p i -> p.Item(ref (i :> obj))) props
+        seq { for i in 1..props.Count -> props.Item(ref (i :> obj)) }
         |> Seq.find (fun p -> p.PropertyID = propId)    
 
     let propValue<'a> (props: Properties) (propId: int) =
@@ -60,9 +56,8 @@ module WiaInterop =
         (getProp props propId).Value <- (ref (value :> obj))
 
     let propRange<'a> (props: Properties) (propId: int) =
-        (getProp props propId).SubTypeValues
-        |> toSeq (fun (x: Vector) -> x.Count )
-                 (fun x i -> x.Item(i) :?> 'a)
+        let range = (getProp props propId).SubTypeValues
+        seq { for i in 1..range.Count -> range.Item(i) :?> 'a }
 
     let propMin (props: Properties) (propId: int) =
         (getProp props propId).SubTypeMin
