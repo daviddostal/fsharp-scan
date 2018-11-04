@@ -4,15 +4,17 @@ open WIA
 /// Represents a scanner device.
 /// A scanner can have one or more image sources (flatbed, feeder, ...).
 type Scanner(device: Device) =
+    // TODO: Check if device type is scanner
+
     let dialogs = CommonDialogClass()
 
     /// Get a property value from the scanner.
     member __.GetProperty propId =
-        WiaInterop.propValue device.Properties propId
+        WiaInterop.getValue device.Properties propId
     
     /// Set the value of a scanner property.
     member __.SetProperty propId value =
-        WiaInterop.setProp device.Properties propId value
+        WiaInterop.setValue device.Properties propId value
     
     /// Common scanner properties.
     member this.Properties =
@@ -39,7 +41,7 @@ type Scanner(device: Device) =
     /// Select scanner item before scanning. Same as scanDialog if only single source is present.
     member this.ItemSelectDialog() =
         dialogs.ShowSelectItems(device, CancelError=false)
-        |> WiaInterop.itemsSeq
+        |> WiaInterop.itemsToSeq
         |> Seq.map (fun item -> ImageSource(item))
 
     /// Provides access to the internal WIA Device instance.

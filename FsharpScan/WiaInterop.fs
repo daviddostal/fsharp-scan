@@ -36,42 +36,47 @@ module WiaInterop =
         deviceManager.add_OnEvent(eventHandler)
         eventHandler
 
+    
+    // Wia item tree
 
+    let isScanner (deviceInfo: DeviceInfo) =
+        deviceInfo.Type = WiaDeviceType.ScannerDeviceType
 
     let deviceInfos (wia: DeviceManager) =
         seq { for i in 1..(wia.DeviceInfos.Count) -> wia.DeviceInfos.Item(ref (i :> obj)) }
-        |> Seq.filter (fun x -> x.Type = WiaDeviceType.ScannerDeviceType)
 
-    let deviceInfoFromId (deviceManager: DeviceManager) deviceId =
+    let deviceInfo (deviceManager: DeviceManager) deviceId =
         deviceInfos deviceManager
         |> Seq.find (fun device -> device.DeviceID = deviceId)
     
-    let itemsSeq (items: Items) =
+    let itemsToSeq (items: Items) =
         seq { for i in 1..items.Count -> items.Item(i) }
 
     let items (scanner: Device) = 
-        scanner.Items
-        |> itemsSeq
+        itemsToSeq scanner.Items
 
-    let getProp (props: Properties) (propId: int) =
+
+    // Properties
+
+    let property (props: Properties) (propId: int) =
         seq { for i in 1..props.Count -> props.Item(ref (i :> obj)) }
         |> Seq.find (fun p -> p.PropertyID = propId)    
 
-    let propValue<'a> (props: Properties) (propId: int) =
-        (getProp props propId).Value :?> 'a
+    let getValue<'a> (props: Properties) (propId: int) =
+        (property props propId).Value :?> 'a
 
-    let setProp (props: Properties) (propId: int) value =
-        (getProp props propId).Value <- (ref (value :> obj))
+    let setValue (props: Properties) (propId: int) value =
+        (property props propId).Value <- (ref (value :> obj))
 
-    let propRange<'a> (props: Properties) (propId: int) =
-        let range = (getProp props propId).SubTypeValues
+    let getRange<'a> (props: Properties) (propId: int) =
+        let range = (property props propId).SubTypeValues
         seq { for i in 1..range.Count -> range.Item(i) :?> 'a }
 
-    let propMin (props: Properties) (propId: int) =
-        (getProp props propId).SubTypeMin
+    let getMin (props: Properties) (propId: int) =
+        (property props propId).SubTypeMin
 
-    let propMax (props: Properties) (propId: int) =
-        (getProp props propId).SubTypeMax
+    let getMax (props: Properties) (propId: int) =
+        (property props propId).SubTypeMax
 
     let withFlags flags enum =
         let clearFlags flags enum = enum &&& (~~~ flags)
@@ -79,16 +84,16 @@ module WiaInterop =
         clearFlags (allFlags flags) enum // clear flags in case flags are only a subset of enum
         |> (|||) (LanguagePrimitives.EnumToValue flags) // set value
 
-    let setPropFlags (props: Properties) (propId: int) value =
-        propValue props propId
+    let setFlags (props: Properties) (propId: int) value =
+        getValue props propId
         |> withFlags value
-        |> setProp props propId
+        |> setValue props propId
+
+
+    // Scanning
 
     let scan (item: Item) =
         item.Transfer() :?> ImageFile
-
-
-    // Images
 
     let toBitmap (imageFile: ImageFile) =
         let bytes = imageFile.FileData.get_BinaryData() :?> byte array

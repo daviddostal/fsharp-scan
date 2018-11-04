@@ -7,27 +7,27 @@ type ImageSource(item: Item) =
 
     /// Get a property value from the image source.
     member __.GetProperty propId =
-        WiaInterop.propValue item.Properties propId
+        WiaInterop.getValue item.Properties propId
     
     /// Get the minimum allowed value of a property.
     member __.PropertyMinimum propId =
-        WiaInterop.propMin item.Properties propId
+        WiaInterop.getMin item.Properties propId
     
     /// Get the maximum allowed value of a property.
     member __.PropertyMaximum propId =
-        WiaInterop.propMax item.Properties propId
+        WiaInterop.getMax item.Properties propId
     
     /// Get a list of possible values of a property.
     member __.PropertyPossibleValues propId =
-        WiaInterop.propRange item.Properties propId
+        WiaInterop.getRange item.Properties propId
     
     /// Set the value of a property for this image source.
     member __.SetProperty propId value =
-        WiaInterop.setProp item.Properties propId value
+        WiaInterop.setValue item.Properties propId value
     
     /// Set the value of a flags property.
     member __.SetPropertyFlag propId value =
-        WiaInterop.setPropFlags item.Properties propId value
+        WiaInterop.setFlags item.Properties propId value
     
     /// Common properties of the image source.
     member this.Properties =

@@ -10,13 +10,14 @@ type DeviceManager() =
     let dialogs = CommonDialogClass()
     let scanners =
         (WiaInterop.deviceInfos deviceManager
+        |> Seq.filter WiaInterop.isScanner
         |> Seq.map (fun deviceInfo -> deviceInfo.Connect())
         |> Seq.map Scanner).ToDictionary(fun d -> d.__WiaDevice.DeviceID)
 
     let deviceConnected =
         WiaInterop.addEventHandler deviceManager EventID.wiaEventDeviceConnected
             (fun deviceId itemId ->
-                let scanner = Scanner((WiaInterop.deviceInfoFromId deviceManager deviceId).Connect())
+                let scanner = Scanner((WiaInterop.deviceInfo deviceManager deviceId).Connect())
                 scanners.Add(deviceId, scanner))
 
     let deviceDisconnected =
@@ -67,9 +68,9 @@ type DeviceManager() =
 
     /// Show dialog for choosing between installed scanners.
     /// Returns default scanner if only one is available.
-    member this.ScannerSelectDialog() =
+    member __.ScannerSelectDialog() =
         dialogs.ShowSelectDevice(WiaDeviceType.ScannerDeviceType, CancelError=false)
-        |> (fun device -> Scanner(device))
+        |> Scanner
     
     /// Provides access to the internal WIA DeviceManager instance.
     member __.__WiaDeviceManager = deviceManager
